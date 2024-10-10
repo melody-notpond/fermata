@@ -1,0 +1,11 @@
+fn test[T](a: T, y: T) : T {
+    if true {
+        
+    } else {
+        
+    }
+
+    test[Y](y,x);
+    let x = a;
+    x = a;
+}
