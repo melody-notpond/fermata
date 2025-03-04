@@ -1,193 +1,78 @@
 type ident = string
 
-(* qualified identifiers *)
-and qident = mident option * ident
+type ty =
+  | TyName of ident * ty list
+  | TyParam of ident
+  | TyVar of int
 
-(* qualified module names (includes functor applications) *)
-and mident = (ident * mexpr list) list
-
-(* top level constructions *)
-and top =
-  (* module definitions *)
-  | TMod of ident * mexpr
-
-  (* module signature definitions *)
-  | TSig of ident * mtype
-
-  (* function definitions *)
-  | TFunc of {
-    name: ident
-  ; generics: ident list
+type copat =
+  { destr: ident
   ; args: (ident * ty) list
-  ; ret_type: ty
-  ; stats: stat list }
+  ; ret_ty: ty }
 
-  (* type definitions *)
-  | TTypeDef of {
-    name: ident
-  ; generics: ident list
-  ; constrs: constr_def list }
+type pat =
+  { constr: ident
+  ; args: ident list }
 
-  (* type aliases *)
-  | TTypeAlias of {
-    name: ident
-  ; generics: ident list
-  ; equiv: ty }
+and expr =
+  | EVar of ident
 
-  (* opening modules *)
-  | TOpen of mident
+  (* let NAME = VALUE in BODY *)
+  | ELet of
+    { name: ident
+    ; value: expr
+    ; body: expr }
 
-(* definitions of constructors in type definitions *)
-and constr_def =
-  (* like a c style enum variant *)
-  | CName of ident
+  (* comatch SELF : TYPED with | COPAT => EXPR* end *)
+  | EComatch of
+    { self: ident
+    ; typed: ty
+    ; methods: (copat * expr) list }
 
-  (* constructor with unnamed arguments *)
-  | CConstr of ident * ty list
+  (* match VALUE with | PAT => EXPR* end *)
+  | EMatch of
+    { value: expr
+    ; branches: (pat * expr) list }
 
-  (* record *)
-  | CRecord of ident * (ident * ty) list
+  (* NAME(ARGS) *)
+  | EConstr of
+    { name: ident
+    ; args: expr list }
 
-(* module expressions *)
-and mexpr =
-  (* name of a module *)
-  | MName of mident
+  (* VALUE.NAME(ARGS) *)
+  | EDestr of
+    { value: expr
+    ; message: ident
+    ; args: expr list }
 
-  (* module structures *)
-  | MStruct of top list
+(* | NAME(ARGS) *)
+type data_constr =
+  { name: ident
+  ; args: (ident option * ty) list }
 
-  (* module functors *)
-  | MFunctor of (ident * mtype) list * top list
-
-  (* subtype module with a signature *)
-  | MSubtype of mexpr * mtype
-
-(* module types *)
-and mtype =
-  (* module names *)
-  | MTyName of mident
-
-  (* module signatures *)
-  | MTySig of decl list
-
-  (* module functor types *)
-  | MTyFunctor of (ident * mtype) list * mtype
-
-(* types *)
-and ty =
-  | TyName of qident * ty list
-  | TyFunc of ty list * ty
-
-(* declarations in a module signature *)
-and decl =
-  (* function declarations *)
-  | DFunc of {
-    name: ident
-  ; generics: ident list
-  ; args: (ident * ty) list
+(* .NAME(ARGS) : RET_TYPE *)
+type codata_method =
+  { name: ident
+  ; args: (ident option * ty) list
   ; ret_type: ty }
 
-  (* type definitions *)
-  | DTypeDef of {
-    name: ident
-  ; generics: ident list
-  ; constrs: constr_def list }
+type top =
+  (* data NAME TPARAMS = VARIANTS *)
+  | TData of
+    { name: ident
+    ; tparams: ident list
+    ; variants: data_constr list }
 
-  (* type aliases *)
-  | DTypeAlias of {
-    name: ident
-  ; generics: ident list
-  ; equiv: ty }
+  (* codata NAME TPARAMS = { METHODS* } *)
+  | TCodata of
+    { name: ident
+    ; tparams: ident list
+    ; methods: codata_method list }
 
-  (* type declarations *)
-  | DType of {
-    name: ident
-  ; generics: ident list }
+  (* let NAME : TYPED = VALUE *)
+  | TLet of
+    { name: ident
+    ; typed: ty
+    ; value: expr }
 
-(* literals *)
-and lit =
-  (* integers *)
-  | LInt of int
-
-  (* booleans *)
-  | LBool of bool
-
-(* expressions *)
-and expr =
-  (* literals *)
-  | ELit of lit
-
-  (* variables *)
-  | EVar of qident
-
-  (* function calls *)
-  | ECall of expr * expr list
-
-  (* record construction *)
-  | ERecord of qident * (ident * expr) list
-
-  (* record projection *)
-  | EAttr of expr * ident
-
-(* statements *)
-and stat =
-  (* variable definition *)
-  | SLet of {
-    mut: bool
-  ; name: pat
-  ; value: expr
-  ; elsy: stat option }
-
-  (* variable assignment *)
-  | SSet of {
-    name: pat
-  ; value: expr
-  ; elsy: stat option }
-
-  (* pattern matching statements *)
-  | SMatch of {
-    value: expr
-  ; branches: (pat * stat list) list }
-
-  (* if statements *)
-  | SIf of {
-    value: expr
-  ; then_branch: stat list
-  ; else_branch: stat list }
-
-  (* function calls *)
-  | SCall of {
-    func: qident
-  ; args: expr list }
-
-  (* return statements *)
-  | SReturn of expr
-
-  (* local module opening *)
-  | SOpen of mident
-
-(* patterns *)
-and pat =
-  (* wildcard *)
-  | PWildcard
-
-  (* variable pattern *)
-  | PVar of ident
-
-  (* constructor pattern *)
-  | PConstr of qident * pat list
-
-  (* record pattern *)
-  | PRecord of ident list
-
-  (* all fields in a record *)
-  | PRecordAll of qident
-
-  (* literal pattern *)
-  | PLit of lit
-
-  (* either pattern *)
-  | POr of pat * pat
-
-(* the entire program *)
-and prog = top list
+type prog = top list
