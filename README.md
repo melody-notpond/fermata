@@ -2,9 +2,13 @@
 A small language I am working on.
 
 ## focus features
+- data and codata
+- ad hoc polymorphism (via user defined subtyping and intersection types)
+- pure
+- algebraic effects
 - simple
-- powerful comptime
-- safe
+
+prolly gonna be garbage collected ngl but would be cool to explore other means of memory management, thats a later problem though
 
 ## other
 some features that might be cool:
@@ -12,20 +16,9 @@ some features that might be cool:
   - study actor model and pi calculus more
   - reference capabilities??
   - look into the pony language more
-- functional oriented
-- simple
-- no mutable state, only immutable state
-- memory safe
-  - linear types?
-  - region allocation and region inference?
-  - garbage collection?
-- comptime
-  - maybe have typeclasses be comptime structures
-  - look into zig comptime
-  - macro system derived from comptime would be cool
+  - actor model might work nicely with codata idk
 - please at least try to have only one idiomatic way to do things
-  - this means you likely wont use all of this list! thats okay!
 - targets:
   - compiling to assembly would be great
   - webassembly is also really cool
-  - a bytecode interpreter is better than nothing
+  - a treewalk interpreter is better than nothing for a prototype
