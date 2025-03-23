@@ -1,0 +1,33 @@
+data list['a] =
+  | Nil()
+  | Cons('a, list ['a])
+
+codata fun['a, 'b] =
+  { .('a) : 'b }
+
+let head : fun[list['a], 'a] =
+  { .(xs: list['a]) : 'a =>
+    match xs with
+    | Nil() => error
+    | Cons(x, _) => x
+    end }
+
+let tail : fun[list['a], list['a]] =
+  { .(xs: list['a]) : 'a =>
+    match xs with
+    | Nil() => error
+    | Cons(_, xs) => xs
+    end }
+
+let first5nats : list[int] = Cons(0, Cons(1, Cons(2, Cons(3, Cons(4, Nil())))))
+
+let map : fun[fun['a, 'b], fun[list['a], list['b]]] =
+  comatch map
+  { .(f: fun['a, 'b]) : fun[list['a], list['b]] =>
+    .(xs: list['a]) : list['b] =>
+    match xs with
+    | Nil() => Nil()
+    | Cons(x, xs) => Cons(f.(x), map.(f).(xs))
+    end }
+
+let succed : list[int] = map.({ .(x: int) : int => x.succ() }).(first5nats)

@@ -1,2 +1,5 @@
 (library
  (name fermata))
+
+(ocamllex lexer)
+(menhir (modules parser))

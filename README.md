@@ -1,11 +1,11 @@
 # fermata
-A small language I am working on.
+a small language i am working on for funsies
 
 ## focus features
 - data and codata
-- ad hoc polymorphism (via user defined subtyping and intersection types)
+- ad hoc polymorphism (by codata via user defined subtyping/intersection types)
 - pure
-- algebraic effects
+- algebraic effects (might be doable with codata? idk we will see)
 - simple
 
 prolly gonna be garbage collected ngl but would be cool to explore other means of memory management, thats a later problem though
@@ -14,11 +14,11 @@ prolly gonna be garbage collected ngl but would be cool to explore other means o
 some features that might be cool:
 - actor model
   - study actor model and pi calculus more
-  - reference capabilities??
   - look into the pony language more
   - actor model might work nicely with codata idk
 - please at least try to have only one idiomatic way to do things
 - targets:
-  - compiling to assembly would be great
-  - webassembly is also really cool
-  - a treewalk interpreter is better than nothing for a prototype
+  - jvm bytecode :0
+  - compiling to assembly would be great too ngl
+- would be nice to be fast, see roc lang for ideas
+  - is data oriented design as a compilation target a good idea for speed?

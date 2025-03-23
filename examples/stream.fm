@@ -1,0 +1,33 @@
+codata stream['a] =
+  { .head() : 'a
+  ; .tail() : stream['a] }
+
+codata fun['a, 'b] =
+  { .('a) : 'b }
+
+let nil : stream['a] =
+  comatch : stream['a]
+  { .head() : 'a => error
+  ; .tail() : stream['a] => error }
+
+let cons : fun['a, fun[stream['a], stream['a]]] =
+  { .(x: 'a) : fun[stream['a], stream['a]] =>
+    .(xs: stream['a]) : stream['a] =>
+    { .head() : 'a => x
+    ; .tail() : stream['a] => xs } }
+
+let nats : stream[int] =
+  comatch count
+  { .(i: int) : stream[int] =>
+    { .head() : int => i
+    ; .tail() : stream[int] => count.(i.succ()) } }
+  .(0)
+
+let map : fun[fun['a, 'b], fun[stream['a], stream['b]]] =
+  comatch map
+  { .(f: fun['a, 'b]) : fun[stream['a], stream['b]] =>
+    .(xs: stream['a]) : stream['b] =>
+    { .head() : 'b => f.(xs.head())
+    ; .tail() : stream['b] => map.(f).(xs.tail()) } }
+
+let succed : stream[int] = map.({ .(x: int) : int => x.succ() }).(nats)

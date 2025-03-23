@@ -1,3 +1,4 @@
+(*
 open Ast
 
 type ty_constraint =
@@ -13,13 +14,13 @@ type context =
 
 type 'a checker = context -> ('a * context, string) result
 
-let (let*) (x: 'a checker) (f: 'a -> 'b checker) : 'b checker =
+let (let* ) (x: 'a checker) (f: 'a -> 'b checker) : 'b checker =
   fun s ->
   match x s with
   | Ok (v, s') -> f v s'
   | Error e -> Error e
 
-let (>>=) = (let*)
+let (>>=) = (let* )
 
 let return (v: 'a) : 'a checker = fun s -> Ok (v, s)
 let error (e: string) : 'a checker = fun _ -> Error e
@@ -213,5 +214,6 @@ let rec check_expr (e: expr) : ty checker =
       let* _ = unify t' t in
       return ()
     in return destr.ret_type
+*)
 
 let check = ()
